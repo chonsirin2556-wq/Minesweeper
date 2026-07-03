@@ -1,0 +1,9 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Minesweeper</title><style>
+body{font-family:Arial;background:#202124;color:#fff;text-align:center}#top{margin:10px}#board{display:grid;grid-template-columns:repeat(9,40px);gap:2px;justify-content:center}.c{width:40px;height:40px;font:bold 18px Arial}.o{background:#ddd}.m{background:#f66}
+</style></head><body><div id=top><button onclick="init()">🔄 Restart</button> <span id=msg></span></div><div id=board></div><script>
+const N=9,M=10;let B,O,F,S=0,t;
+function init(){clearInterval(t);S=0;msg.textContent='';B=[...Array(N)].map(()=>Array(N).fill(0));O=[...Array(N)].map(()=>Array(N).fill(false));F=[...Array(N)].map(()=>Array(N).fill(false));let p=0;while(p<M){let x=~~(Math.random()*N),y=~~(Math.random()*N);if(B[y][x]!="*"){B[y][x]="*";p++;}}for(let y=0;y<N;y++)for(let x=0;x<N;x++){if(B[y][x]=="*")continue;let c=0;for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){let nx=x+dx,ny=y+dy;if(nx>=0&&ny>=0&&nx<N&&ny<N&&B[ny][nx]=="*")c++;}B[y][x]=c;}t=setInterval(()=>S++,1000);draw();}
+function draw(){board.innerHTML='';for(let y=0;y<N;y++)for(let x=0;x<N;x++){let b=document.createElement('button');b.className='c'+(O[y][x]?' o':'');if(O[y][x]){if(B[y][x]=='*'){b.textContent='💣';b.classList.add('m')}else b.textContent=B[y][x]||'';}else b.textContent=F[y][x]?'🚩':'';b.onclick=()=>op(x,y);b.oncontextmenu=e=>{e.preventDefault();if(!O[y][x]){F[y][x]=!F[y][x];draw();}};board.appendChild(b);}}
+function op(x,y){if(O[y][x]||F[y][x])return;O[y][x]=true;if(B[y][x]=='*'){for(let yy=0;yy<N;yy++)for(let xx=0;xx<N;xx++)if(B[yy][xx]=='*')O[yy][xx]=true;clearInterval(t);msg.textContent='💥 Game Over';draw();return;}if(B[y][x]==0){for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){let nx=x+dx,ny=y+dy;if(nx>=0&&ny>=0&&nx<N&&ny<N&&!O[ny][nx])op(nx,ny);}}draw();let safe=0;for(let r of O)for(let v of r)if(v)safe++;if(safe==N*N-M){clearInterval(t);msg.textContent='🎉 You Win! Time: '+S+'s';}}
+init();
+</script></body></html>
